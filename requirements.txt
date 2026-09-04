@@ -1,0 +1,14 @@
+jupyter
+ipykernel
+numpy
+pandas
+matplotlib
+scikit-learn
+joblib
+fastapi
+uvicorn
+streamlit
+requests
+pytest
+httpx
+prometheus-client

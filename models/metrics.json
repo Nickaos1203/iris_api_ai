@@ -1,0 +1,7 @@
+{
+    "model": "RandomForestClassifier",
+    "accuracy": 0.9333333333333333,
+    "n_estimators": 100,
+    "random_state": 42,
+    "test_size": 0.2
+}
