@@ -174,24 +174,24 @@ jobs:
           docker compose -f docker-compose.render.yml down
 
 
-  # ============================================================
-  # 6. Déploiement sur Render
-  # ============================================================
-  deploy-render:
-    name: Déploiement sur Render
-    needs: docker-production
+  # # ============================================================
+  # # 6. Déploiement sur Render
+  # # ============================================================
+  # deploy-render:
+  #   name: Déploiement sur Render
+  #   needs: docker-production
 
-    # Déploiement uniquement après un push sur main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   # Déploiement uniquement après un push sur main
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
+  #   steps:
 
-      - name: Déploiement de l'API sur Render
-        run: |
-          curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
+  #     - name: Déploiement de l'API sur Render
+  #       run: |
+  #         curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
 
-      - name: Déploiement de Streamlit sur Render
-        run: |
-          curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
+  #     - name: Déploiement de Streamlit sur Render
+  #       run: |
+  #         curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
