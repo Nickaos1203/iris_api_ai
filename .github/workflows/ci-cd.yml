@@ -174,24 +174,30 @@ jobs:
           docker compose -f docker-compose.render.yml down
 
 
-  # # ============================================================
-  # # 6. Déploiement sur Render
-  # # ============================================================
-  # deploy-render:
-  #   name: Déploiement sur Render
-  #   needs: docker-production
+  # ============================================================
+  # 6. Déploiement sur Render
+  # ============================================================
+  deploy-render:
+    name: Déploiement sur Render
+    needs:
+      - tests
+      - docker-compose
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
 
-  #   # Déploiement uniquement après un push sur main
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Déploiement de l'API
+        run: |
+          curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
 
-  #   runs-on: ubuntu-latest
+      - name: Déploiement de Streamlit
+        run: |
+          curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
 
-  #   steps:
+      - name: Déploiement de Prometheus
+        run: |
+          curl -X POST "${{ secrets.RENDER_PROMETHEUS_DEPLOY_HOOK }}"
 
-  #     - name: Déploiement de l'API sur Render
-  #       run: |
-  #         curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
-
-  #     - name: Déploiement de Streamlit sur Render
-  #       run: |
-  #         curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
+      - name: Déploiement de Grafana
+        run: |
+          curl -X POST "${{ secrets.RENDER_GRAFANA_DEPLOY_HOOK }}"
