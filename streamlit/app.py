@@ -12,7 +12,7 @@ st.set_page_config(
 
 # URL de l'API
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
-# API_DOCKER = "http://api:8000"
+API_DOCKER = "http://api:8000"
 
 
 # Titre
@@ -114,7 +114,3 @@ if st.button("🔍 Prédire l'espèce", use_container_width=True):
 
 # Informations sur l'API
 st.divider()
-
-st.caption(
-    f"API de prédiction : {API_URL}"
-)
