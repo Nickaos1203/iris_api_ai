@@ -13,7 +13,7 @@ from prometheus_client import (
 
 
 app = FastAPI(
-    title="Iris Classification API",
+    title="Iris API AI",
     description="API de prédiction du modèle Iris",
     version="1.0.0"
 )
@@ -104,19 +104,10 @@ def root():
     REQUEST_COUNT.inc()
 
     return {
-        "message": "Iris Classification API",
+        "message": "Bienvenue sur IRIS API AI",
         "status": "running"
     }
 
-
-@app.get("/health")
-def health():
-
-    REQUEST_COUNT.inc()
-
-    return {
-        "status": "healthy"
-    }
 
 
 @app.post("/predict")
