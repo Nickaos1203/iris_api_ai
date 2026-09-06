@@ -14,7 +14,7 @@ services:
       dockerfile: Dockerfile.streamlit
     container_name: iris-streamlit
     ports:
-      - "8501:8501"
+      - API_URL=http://api:8000
     depends_on:
       - api
 

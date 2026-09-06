@@ -1,4 +1,5 @@
 services:
+
   api:
     build:
       context: .
@@ -21,10 +22,19 @@ services:
       - api
 
   prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    build:
+      context: .
+      dockerfile: Dockerfile.prometheus.render
     ports:
       - "9090:9090"
     depends_on:
       - api
+
+  grafana:
+    build:
+      context: .
+      dockerfile: Dockerfile.grafana.render
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
