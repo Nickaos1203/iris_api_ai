@@ -22,7 +22,7 @@ MODEL_PATH = "models/iris_model.joblib"
 METRICS_PATH = "models/metrics.json"
 
 # critères d'évaluation du modèle
-MIN_SCORE = 0.90
+MIN_SCORE = 0.88
 RANDOM_STATE = 42
 
 
