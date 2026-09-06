@@ -1,0 +1,22 @@
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api.render
+    environment:
+      - PORT=10000
+    ports:
+      - "8000:10000"
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit.render
+    environment:
+      - PORT=10000
+      - API_URL=http://api:10000
+    ports:
+      - "8501:10000"
+    depends_on:
+      - api

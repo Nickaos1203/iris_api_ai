@@ -1,25 +1,20 @@
-name: Iris MLOps CI/CD
+name: Iris API AI CI/CD
 
-# ==========================================
-# Étape 1 : Déclenchement du pipeline
-# ==========================================
 on:
   push:
     branches:
       - main
-      - develop
 
   pull_request:
     branches:
       - main
-      - develop
 
 
 jobs:
 
-  # ==========================================
-  # Étape 2 : Préparation de l'environnement
-  # ==========================================
+  # ============================================================
+  # 1. Préparation de l'environnement
+  # ============================================================
   prepare:
     name: Préparation de l'environnement
     runs-on: ubuntu-latest
@@ -39,9 +34,9 @@ jobs:
           pip install -r requirements.txt
 
 
-  # ==========================================
-  # Étape 3 : Validation du modèle
-  # ==========================================
+  # ============================================================
+  # 2. Validation du modèle
+  # ============================================================
   validate-model:
     name: Validation du modèle
     needs: prepare
@@ -61,14 +56,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Validation du modèle
+      - name: Validation du modèle Iris
         run: |
-          python src/pipeline_model.py
+          python src/validate_model.py
 
 
-  # ==========================================
-  # Étape 4 : Tests automatisés
-  # ==========================================
+  # ============================================================
+  # 3. Tests automatisés
+  # ============================================================
   tests:
     name: Tests automatisés
     needs: validate-model
@@ -93,11 +88,11 @@ jobs:
           pytest -v
 
 
-  # ==========================================
-  # Étape 5 : Docker Compose
-  # ==========================================
-  docker-compose:
-    name: Docker Compose
+  # ============================================================
+  # 4. Test Docker - environnement de développement
+  # ============================================================
+  docker-dev:
+    name: Test Docker - Développement
     needs: tests
     runs-on: ubuntu-latest
 
@@ -105,11 +100,16 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v4
 
-      - name: Construction des images
+      - name: Vérification Docker
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Construction des conteneurs
         run: |
           docker compose build
 
-      - name: Lancement des services
+      - name: Démarrage de la stack
         run: |
           docker compose up -d
 
@@ -117,12 +117,81 @@ jobs:
         run: |
           docker compose ps
 
-      - name: Vérification de l'API
+      - name: Attente du démarrage de l'API
         run: |
           sleep 10
-          curl --fail http://localhost:8000/health
 
-      - name: Arrêt des services
+      - name: Vérification de l'API via /metrics
+        run: |
+          curl --fail http://localhost:8000/metrics
+
+      - name: Arrêt de la stack
         if: always()
         run: |
           docker compose down
+
+
+  # ============================================================
+  # 5. Test Docker - environnement de production
+  # ============================================================
+  docker-production:
+    name: Test Docker - Production
+    needs: docker-dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Vérification Docker
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Construction de la stack Render
+        run: |
+          docker compose -f docker-compose.render.yml build
+
+      - name: Démarrage de la stack Render
+        run: |
+          docker compose -f docker-compose.render.yml up -d
+
+      - name: Vérification des conteneurs
+        run: |
+          docker compose -f docker-compose.render.yml ps
+
+      - name: Attente du démarrage de l'API
+        run: |
+          sleep 10
+
+      - name: Vérification de l'API via /metrics
+        run: |
+          curl --fail http://localhost:8000/metrics
+
+      - name: Arrêt de la stack Render
+        if: always()
+        run: |
+          docker compose -f docker-compose.render.yml down
+
+
+  # ============================================================
+  # 6. Déploiement sur Render
+  # ============================================================
+  deploy-render:
+    name: Déploiement sur Render
+    needs: docker-production
+
+    # Déploiement uniquement après un push sur main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Déploiement de l'API sur Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
+
+      - name: Déploiement de Streamlit sur Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
