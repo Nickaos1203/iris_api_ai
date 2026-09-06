@@ -4,18 +4,19 @@ import requests
 
 # Configuration de la page
 st.set_page_config(
-    page_title="Iris MLOps AI",
+    page_title="Iris API AI",
     page_icon="🌸",
     layout="centered"
 )
 
 
-# URL de l'API FastAPI
+# URL de l'API FastAPI après docker compose up --build -d
 API_URL = "http://127.0.0.1:8000"
+API_DOCKER = "http://api:8000"
 
 
 # Titre
-st.title("🌸 Iris MLOps AI")
+st.title("Iris MLOps AI")
 
 st.write(
     "Cette application permet de prédire l'espèce d'une fleur "
@@ -74,7 +75,7 @@ if st.button("🔍 Prédire l'espèce", use_container_width=True):
 
         # Appel de l'API FastAPI
         response = requests.post(
-            f"{API_URL}/predict",
+            f"{API_DOCKER}/predict",
             json=data,
             timeout=5
         )
