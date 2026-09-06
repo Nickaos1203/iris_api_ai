@@ -179,25 +179,23 @@ jobs:
   # ============================================================
   deploy-render:
     name: Déploiement sur Render
-    needs:
-      - tests
-      - docker-compose
+    needs: docker-production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
       - name: Déploiement de l'API
         run: |
-          curl -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
+          curl --fail -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
 
       - name: Déploiement de Streamlit
         run: |
-          curl -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
+          curl --fail -X POST "${{ secrets.RENDER_STREAMLIT_DEPLOY_HOOK }}"
 
       - name: Déploiement de Prometheus
         run: |
-          curl -X POST "${{ secrets.RENDER_PROMETHEUS_DEPLOY_HOOK }}"
+          curl --fail -X POST "${{ secrets.RENDER_PROMETHEUS_DEPLOY_HOOK }}"
 
       - name: Déploiement de Grafana
         run: |
-          curl -X POST "${{ secrets.RENDER_GRAFANA_DEPLOY_HOOK }}"
+          curl --fail -X POST "${{ secrets.RENDER_GRAFANA_DEPLOY_HOOK }}"
