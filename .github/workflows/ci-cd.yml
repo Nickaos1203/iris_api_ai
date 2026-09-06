@@ -58,7 +58,7 @@ jobs:
 
       - name: Validation du modèle Iris
         run: |
-          python src/validate_model.py
+          python src/pipeline_model.py
 
 
   # ============================================================
