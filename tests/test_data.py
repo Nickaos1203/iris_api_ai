@@ -1,4 +1,4 @@
-from src.data import load_and_prepare_data
+from src.pipeline_model import load_and_prepare_data
 
 import numpy as np
 

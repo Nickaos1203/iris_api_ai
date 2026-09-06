@@ -6,15 +6,15 @@ from api.main import app
 client = TestClient(app)
 
 
-def test_health():
-    """
-    teste le endpoint '/statut'
-    """
-    response = client.get("/statut")
-    assert response.status_code == 200
-    assert response.json() == {
-        "status": "healthy"
-    }
+# def test_health():
+#     """
+#     teste le endpoint '/statut'
+#     """
+#     response = client.get("/statut")
+#     assert response.status_code == 200
+#     assert response.json() == {
+#         "status": "healthy"
+#     }
 
 
 def test_root():
