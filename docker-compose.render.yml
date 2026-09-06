@@ -1,5 +1,4 @@
 services:
-
   api:
     build:
       context: .
@@ -18,5 +17,14 @@ services:
       - API_URL=http://api:10000
     ports:
       - "8501:10000"
+    depends_on:
+      - api
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
     depends_on:
       - api

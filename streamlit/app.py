@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-
+import os
 
 # Configuration de la page
 st.set_page_config(
@@ -10,9 +10,9 @@ st.set_page_config(
 )
 
 
-# URL de l'API FastAPI après docker compose up --build -d
-API_URL = "http://127.0.0.1:8000"
-API_DOCKER = "http://api:8000"
+# URL de l'API
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+# API_DOCKER = "http://api:8000"
 
 
 # Titre
@@ -75,7 +75,7 @@ if st.button("🔍 Prédire l'espèce", use_container_width=True):
 
         # Appel de l'API FastAPI
         response = requests.post(
-            f"{API_DOCKER}/predict",
+            f"{API_URL}/predict",
             json=data,
             timeout=5
         )
