@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import pandas as pd
 import joblib
-import time
+import time, logging
 
 from prometheus_client import (
     Counter,
@@ -10,6 +10,9 @@ from prometheus_client import (
     Gauge,
     make_asgi_app
 )
+
+# capteur de logs
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -20,10 +23,9 @@ app = FastAPI(
 
 
 # ============================================================
-# Chargement du modèle
+# Chemin vers le modèle
 # ============================================================
-
-model = joblib.load("models/iris_model.joblib")
+MODEL_PATH = "models/iris_model.joblib"
 
 
 target_names = [
@@ -126,8 +128,10 @@ def predict(data: IrisFeatures):
             "petal width (cm)": data.petal_width
         }])
 
-        prediction = model.predict(features)
+        # Chargement du modèle au moment de la prédiction
+        model = joblib.load(MODEL_PATH)
 
+        prediction = model.predict(features)
         predicted_class = target_names[prediction[0]]
 
         # Compteur par espèce
@@ -139,14 +143,21 @@ def predict(data: IrisFeatures):
             "prediction": predicted_class
         }
 
-    except Exception:
-
+    except Exception as e:
         ERROR_COUNT.inc()
 
-        raise
+        logger.error(
+            "Erreur lors de la prédiction : %s",
+            e,
+            exc_info=True
+        )
+
+        raise HTTPException(
+            status_code=503,
+            detail=f"Modèle de prédiction indisponible : {str(e)}"
+        )
 
     finally:
 
         duration = time.time() - start_time
-
         REQUEST_LATENCY.observe(duration)
